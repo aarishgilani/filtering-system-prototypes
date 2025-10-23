@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cabinet Selection</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .product-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        /* Left Side - Image Preview */
+        .image-section {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .main-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .placeholder-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 8rem;
+            font-weight: bold;
+        }
+
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+
+        .thumbnail {
+            aspect-ratio: 1;
+            background: #f5f5f5;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+            overflow: hidden;
+        }
+
+        .thumbnail:hover {
+            border-color: #ddd;
+        }
+
+        .thumbnail.active {
+            border-color: #333;
+        }
+
+        /* Right Side - Selection Options */
+        .options-section {
+            padding: 1rem 0;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 2rem 0;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .current-selection {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .current-selection strong {
+            font-weight: 600;
+        }
+
+        .show-more {
+            color: #333;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        .show-more:hover {
+            color: #666;
+        }
+
+        /* Cabinet Type Selection */
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .type-option {
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .type-swatch {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .type-option:hover .type-swatch {
+            border-color: #ddd;
+            transform: scale(1.05);
+        }
+
+        .type-option.selected .type-swatch {
+            border-color: #333;
+            box-shadow: 0 0 0 1px #333;
+        }
+
+        .type-label {
+            font-size: 0.9rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Cabinet Styles Section */
+        .cabinet-info {
+            margin-bottom: 2rem;
+        }
+
+        .cabinet-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .cabinet-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .cabinet-features li {
+            padding: 0.4rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .cabinet-features li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .options-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .cabinet-option {
+            text-align: center;
+            cursor: pointer;
+            padding: 1rem;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .cabinet-option:hover {
+            border-color: #ddd;
+            background: #fafafa;
+        }
+
+        .cabinet-option.selected {
+            border-color: #333;
+            background: #f5f5f5;
+        }
+
+        .cabinet-option-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .cabinet-option-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            line-height: 1.3;
+            color: #333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #999;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 968px) {
+            .product-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .image-section {
+                position: relative;
+                top: 0;
+            }
+
+            .type-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .type-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" x-data="cabinetSelector()">
+        <div class="product-layout">
+            <!-- Left Side: Image Preview -->
+            <div class="image-section">
+                <div class="main-image">
+                    <template x-if="selectedCabinet">
+                        <div 
+                            class="placeholder-image"
+                            :style="`background: ${selectedCabinet.color}`"
+                            x-text="selectedCabinet.initial">
+                        </div>
+                    </template>
+                    <template x-if="!selectedCabinet && selectedType">
+                        <div style="color: #ccc; font-size: 2rem;">
+                            Select a cabinet to preview
+                        </div>
+                    </template>
+                    <template x-if="!selectedType">
+                        <div style="color: #ccc; font-size: 2rem;">
+                            Select a type to begin
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="thumbnail-grid" x-show="selectedCabinet">
+                    <template x-for="i in 4" :key="i">
+                        <div class="thumbnail" :class="{ 'active': i === 1 }">
+                            <div 
+                                class="placeholder-image"
+                                :style="selectedCabinet ? `background: ${selectedCabinet.color}; font-size: 2rem;` : ''"
+                                x-text="selectedCabinet?.initial">
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Right Side: Selection Options -->
+            <div class="options-section">
+                <!-- Cabinet Type Selection -->
+                <div>
+                    <h2 class="section-title">Cabinet Type</h2>
+                    <div class="current-selection">
+                        <strong>Current Selection:</strong> 
+                        <span x-text="selectedType ? getTypeName(selectedType) : 'None'"></span>
+                    </div>
+                    
+                    <div class="type-grid">
+                        <template x-for="type in cabinetTypes" :key="type.id">
+                            <div 
+                                class="type-option"
+                                :class="{ 'selected': selectedType === type.id }"
+                                @click="selectType(type.id)">
+                                <div 
+                                    class="type-swatch"
+                                    :style="`background: ${type.color}`"
+                                    x-text="type.icon">
+                                </div>
+                                <div class="type-label" x-text="type.name"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- Cabinet Styles Section -->
+                <div>
+                    <h2 class="section-title">Cabinet Styles*</h2>
+                    
+                    <template x-if="selectedCabinet">
+                        <div class="cabinet-info">
+                            <div class="cabinet-name" x-text="selectedCabinet.name"></div>
+                            <ul class="cabinet-features">
+                                <li x-text="selectedCabinet.description"></li>
+                                <li x-text="`Available in ${selectedCabinet.dimensions}`"></li>
+                                <li x-text="`${selectedCabinet.material} construction`"></li>
+                            </ul>
+                        </div>
+                    </template>
+
+                    <div class="options-label">
+                        <span>Options:</span>
+                        <span class="show-more" @click="showAllOptions = !showAllOptions" x-text="showAllOptions ? 'Show Less' : 'Show More'"></span>
+                    </div>
+
+                    <template x-if="!selectedType">
+                        <div class="empty-state">
+                            Please select a cabinet type above to view available options
+                        </div>
+                    </template>
+
+                    <template x-if="selectedType && availableCabinets.length === 0">
+                        <div class="empty-state">
+                            No cabinets available for this type
+                        </div>
+                    </template>
+
+                    <div 
+                        class="options-grid"
+                        x-show="selectedType && availableCabinets.length > 0">
+                        <template x-for="cabinet in displayedCabinets" :key="cabinet.id">
+                            <div 
+                                class="cabinet-option"
+                                :class="{ 'selected': selectedCabinet?.id === cabinet.id }"
+                                @click="selectCabinet(cabinet)">
+                                <div 
+                                    class="cabinet-option-image"
+                                    :style="`background: ${cabinet.color}`"
+                                    x-text="cabinet.initial">
+                                </div>
+                                <div class="cabinet-option-name" x-text="cabinet.shortName"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function cabinetSelector() {
+            return {
+                selectedType: null,
+                selectedCabinet: null,
+                showAllOptions: false,
+                
+                cabinetTypes: [
+                    { id: 'base', name: 'Base', icon: 'B', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+                    { id: 'wall', name: 'Wall', icon: 'W', color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
+                    { id: 'tall', name: 'Tall', icon: 'T', color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+                    { id: 'vanity', name: 'Vanity', icon: 'V', color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+                    { id: 'sink', name: 'Sink', icon: 'S', color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }
+                ],
+                
+                cabinets: [
+                    { id: 1, name: 'Pie-Cut Corner Base Cabinet BCCLR36', shortName: 'Base Corner Cabinet BCCLR', type: 'base', initial: 'B', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', dimensions: '36" W x 24" D x 34.5" H', material: 'Premium Oak', description: 'Corner Base Cabinet with soft-close hinges' },
+                    { id: 2, name: 'Classic Base Cabinet B36', shortName: 'Base Cabinet B36', type: 'base', initial: 'B', color: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)', dimensions: '36" W x 24" D x 34.5" H', material: 'Solid Oak', description: 'Standard base cabinet with adjustable shelves' },
+                    { id: 3, name: 'Wide Base Cabinet B48', shortName: 'Base Cabinet B48', type: 'base', initial: 'B', color: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)', dimensions: '48" W x 24" D x 34.5" H', material: 'Cherry Wood', description: 'Extra wide base unit for maximum storage' },
+                    
+                    { id: 4, name: 'Pie-Cut Corner Wall Cabinet WCCLR36', shortName: 'Wall Cabinet W36 Height: 36"', type: 'wall', initial: 'W', color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', dimensions: '36" W x 12" D x 36" H', material: 'Birch Wood', description: 'Pie-Cut Corner Wall Cabinet with 1 Bifold Door' },
+                    { id: 5, name: 'Standard Wall Cabinet W30', shortName: 'Wall Cabinet W30 Height: 30"', type: 'wall', initial: 'W', color: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', dimensions: '30" W x 12" D x 30" H', material: 'Maple', description: 'Standard wall mount with glass door option' },
+                    { id: 6, name: 'Glass Wall Cabinet W24', shortName: 'Wall Cabinet W24 Height: 42"', type: 'wall', initial: 'W', color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', dimensions: '24" W x 12" D x 42" H', material: 'Glass & Oak', description: 'Premium glass front wall cabinet' },
+                    
+                    { id: 7, name: 'Tall Pantry Cabinet T84', shortName: 'Tall Pantry Cabinet Height: 84"', type: 'tall', initial: 'T', color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', dimensions: '24" W x 24" D x 84" H', material: 'Maple', description: 'Full height pantry with adjustable shelves' },
+                    { id: 8, name: 'Utility Tower Cabinet T90', shortName: 'Utility Tower Height: 90"', type: 'tall', initial: 'T', color: 'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)', dimensions: '18" W x 24" D x 90" H', material: 'Oak Veneer', description: 'Narrow utility tower for tight spaces' },
+                    
+                    { id: 9, name: 'Modern Bathroom Vanity V48', shortName: 'Modern Vanity 48"', type: 'vanity', initial: 'V', color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', dimensions: '48" W x 21" D x 32" H', material: 'MDF with Laminate', description: 'Contemporary vanity with soft-close drawers' },
+                    { id: 10, name: 'Luxury Double Vanity V72', shortName: 'Luxury Vanity 72"', type: 'vanity', initial: 'V', color: 'linear-gradient(135deg, #f77062 0%, #fe5196 100%)', dimensions: '72" W x 22" D x 32" H', material: 'Solid Walnut', description: 'Premium double vanity with marble top option' },
+                    
+                    { id: 11, name: 'Double Sink Base Cabinet S60', shortName: 'Double Sink Cabinet 60"', type: 'sink', initial: 'S', color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', dimensions: '60" W x 22" D x 34" H', material: 'Plywood', description: 'Double bowl sink base with central drawer' },
+                    { id: 12, name: 'Under Sink Cabinet S36', shortName: 'Under Sink Storage 36"', type: 'sink', initial: 'S', color: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', dimensions: '36" W x 21" D x 34" H', material: 'Pine', description: 'Standard sink base with removable shelf' }
+                ],
+                
+                get availableCabinets() {
+                    if (!this.selectedType) return [];
+                    return this.cabinets.filter(c => c.type === this.selectedType);
+                },
+                
+                get displayedCabinets() {
+                    if (this.showAllOptions) return this.availableCabinets;
+                    return this.availableCabinets.slice(0, 4);
+                },
+                
+                selectType(type) {
+                    this.selectedType = type;
+                    this.selectedCabinet = null;
+                    this.showAllOptions = false;
+                },
+                
+                selectCabinet(cabinet) {
+                    this.selectedCabinet = cabinet;
+                },
+                
+                getTypeName(typeId) {
+                    const type = this.cabinetTypes.find(t => t.id === typeId);
+                    return type ? type.name + ' Cabinets' : '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
